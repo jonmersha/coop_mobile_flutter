@@ -70,7 +70,104 @@ class _DebitCardReplacementRequestState extends State<DebitCardReplacementReques
     };
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
     request.body =
-    '''{\n"AccountDetailsRequest": {\n"ESBHeader": {\n"serviceCode": "500000",\n"channel": "USSD",\n"Service_name": "ACCTBRANCH",\n"Message_Id": "6255726662"\n},\n\n"WebRequestCommon": {\n"company": "ET0010222",\n"password": "123456",\n"userName": "REGASAALC"\n},\n"ACCTCOMPANYVIEWType": [\n{\n"columnName": "ACCOUNT.NUMBER",\n"criteriaValue": "${accountNumber.text}",\n"operand": "EQ"\n}\n]\n}\n}\n'''
+    '''
+    {
+    "DebitCardReplacementRequest": {
+        "ESBHeader": {
+            "serviceCode": "160000",
+            "channel": "USSD",
+            "Service_name": "callOfs",
+            "Message_Id": "MM582729"
+        },
+        "ApplicationName": "CBO.CARD.REG.DET",
+        "Options": {
+            "VersionName": "INP2.ACE",
+            "Function": "I",
+            "Operation": "PROCESS"
+        },
+        "UserInformation": {
+            "UserId": "METASEBIAYIM",
+            "PassWord": "@Tamgaw00@",
+            "CompanyID": "ET0010222"
+        },
+        "TransactionID": "1000000000028",
+        "MessageData": [
+            {
+                "FieldName": "CUSTOMER.ID",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": ""
+            },
+            {
+                "FieldName": "CUS.TITLE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "1:MR"
+            },
+            {
+                "FieldName": "CARD.REQ.TYPE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "OLD"
+            },
+            {
+                "FieldName": "DEBIT.CARD.TYPE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "4:IFB DEBIT CARD"
+            },
+            {
+                "FieldName": "NAME.ON.CARD",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "OROMIA"
+            },
+            {
+                "FieldName": "MARITAL.STATUS",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "1:Single"
+            },
+            {
+                "FieldName": "GENDER",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "M"
+            },
+            {
+                "FieldName": "IDENTITY.NO",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "1002272462"
+            },
+            {
+                "FieldName": "IDENTITY.TYPE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "1:Civil ID"
+            },
+            {
+                "FieldName": "ADDRESS.TYPE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "01:Mailing Address"
+            },
+            {
+                "FieldName": "ADDRESS",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "ADDIS ABABA"
+            },
+            {
+                "FieldName": "PHONE.NO",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "+251911427707"
+            }
+        ]
+    }
+}
+    '''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();

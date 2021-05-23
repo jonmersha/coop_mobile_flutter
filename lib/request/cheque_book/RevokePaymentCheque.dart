@@ -2,12 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
-import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
-import 'package:coop_mobile/response/BlalanceResponse.dart';
-import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
-import 'package:coop_mobile/response/MiniStatementResponse.dart';
-import 'package:coop_mobile/response/TransationDetailResponse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -71,6 +66,8 @@ class _RevokePaymentChequeState extends State<RevokePaymentCheque> {
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
     request.body =
 '''{
+    
+    {
     "RevokeStopPaymentChequesRequest": {
         "ESBHeader": {
             "serviceCode": "900000",
@@ -97,7 +94,9 @@ class _RevokePaymentChequeState extends State<RevokePaymentCheque> {
             }
         }
     }
-}'''
+}
+    
+    '''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();

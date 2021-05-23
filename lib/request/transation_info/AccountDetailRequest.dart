@@ -70,7 +70,8 @@ class _AccountDetailRequestState extends State<AccountDetailRequest> {
     };
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
     request.body =
-    '''{\n"AccountDetailsRequest": {\n"ESBHeader": {\n"serviceCode": "500000",\n"channel": "USSD",\n"Service_name": "ACCTBRANCH",\n"Message_Id": "6255726662"\n},\n\n"WebRequestCommon": {\n"company": "ET0010222",\n"password": "123456",\n"userName": "REGASAALC"\n},\n"ACCTCOMPANYVIEWType": [\n{\n"columnName": "ACCOUNT.NUMBER",\n"criteriaValue": "${accountNumber.text}",\n"operand": "EQ"\n}\n]\n}\n}\n'''
+    '''{
+    "AccountDetailsRequest": {\n"ESBHeader": {\n"serviceCode": "500000",\n"channel": "USSD",\n"Service_name": "ACCTBRANCH",\n"Message_Id": "6255726662"\n},\n\n"WebRequestCommon": {\n"company": "ET0010222",\n"password": "123456",\n"userName": "REGASAALC"\n},\n"ACCTCOMPANYVIEWType": [\n{\n"columnName": "ACCOUNT.NUMBER",\n"criteriaValue": "${accountNumber.text}",\n"operand": "EQ"\n}\n]\n}\n}\n'''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();

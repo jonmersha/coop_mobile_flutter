@@ -70,7 +70,50 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
     };
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
     request.body =
-    '''{\n"AccountDetailsRequest": {\n"ESBHeader": {\n"serviceCode": "500000",\n"channel": "USSD",\n"Service_name": "ACCTBRANCH",\n"Message_Id": "6255726662"\n},\n\n"WebRequestCommon": {\n"company": "ET0010222",\n"password": "123456",\n"userName": "REGASAALC"\n},\n"ACCTCOMPANYVIEWType": [\n{\n"columnName": "ACCOUNT.NUMBER",\n"criteriaValue": "${accountNumber.text}",\n"operand": "EQ"\n}\n]\n}\n}\n'''
+    '''
+    {
+    "DebitCardBlockAndUnBlockRequest": {
+        "ESBHeader": {
+            "serviceCode": "170000",
+            "channel": "USSD",
+            "Service_name": "callOfs",
+            "Message_Id": "MM582729"
+        },
+        "ApplicationName": "CARD.ISSUE",
+        "Options": {
+            "VersionName": "INPUT.ACE",
+            "Function": "I",
+            "Operation": "PROCESS"
+        },
+        "UserInformation": {
+            "UserId": "METASEBIAYIM",
+            "PassWord": "@Tamgaw00@",
+            "CompanyID": "ET0010021"
+        },
+        "TransactionID": "ATM.01234567890123456",
+        "MessageData": [
+            {
+                "FieldName": "CARD.STATUS",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "91"
+            },
+            {
+                "FieldName": "ACCOUNT",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "1000003658817"
+            },
+            {
+                "FieldName": "EXPIRY.DATE",
+                "MultiValueNumber": "1",
+                "SubvalueNumber": "1",
+                "FieldContent": "20220313"
+            }
+        ]
+    }
+} 
+    '''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();

@@ -91,7 +91,9 @@ class _FXRateInfromationState extends State<FXRateInfromation> {
             }
         ]
     }
-}'''
+}
+
+'''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();

@@ -1,21 +1,16 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coop_mobile/CommonData.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
-import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
-import 'package:coop_mobile/response/BlalanceResponse.dart';
-import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
-import 'package:coop_mobile/response/MiniStatementResponse.dart';
-import 'package:coop_mobile/response/TransationDetailResponse.dart';
+import 'package:coop_mobile/response/BulkFundTransferResponse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class BulkFundTransferCredit extends StatefulWidget {
-
-
   @override
   _BulkFundTransferCreditState createState() => _BulkFundTransferCreditState();
 }
@@ -68,7 +63,7 @@ class _BulkFundTransferCreditState extends State<BulkFundTransferCredit> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=8'));
     request.body ='''
     {
     "BulkFundTransferRequest": {
@@ -147,6 +142,7 @@ class _BulkFundTransferCreditState extends State<BulkFundTransferCredit> {
         ]
     }
 }
+}
     ''';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -157,21 +153,21 @@ class _BulkFundTransferCreditState extends State<BulkFundTransferCredit> {
       var data=convert.jsonDecode(val);
 
 
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['BulkFundTransferResponse']['ESBStatus']['Status']!='Success')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][1],
+          desc: data['BulkFundTransferResponse']['ESBStatus']['responseCode'],
           btnCancelOnPress:(){Navigator.pop(context);} ,
         ).show();
 
 else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
+       data= data['BulkFundTransferResponse']['MessageData'];
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
+        MaterialPageRoute(builder: (context)=>BulkFundTransferResponse(data)),
       );
     }
 

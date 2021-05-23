@@ -1,13 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coop_mobile/CommonData.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
-import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
+
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
-import 'package:coop_mobile/response/BlalanceResponse.dart';
-import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
-import 'package:coop_mobile/response/MiniStatementResponse.dart';
-import 'package:coop_mobile/response/TransationDetailResponse.dart';
+import 'package:coop_mobile/response/DebitCardRequestResponse.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,8 +21,20 @@ class DebitCardRequest extends StatefulWidget {
 
 class _DebitCardRequestState extends State<DebitCardRequest> {
 
-
   final accountNumber=TextEditingController();
+  final customerID=TextEditingController();
+  final customerTitle=TextEditingController();
+  final cardType=TextEditingController();
+  final debitCardType=TextEditingController();
+  final nameOnCard=TextEditingController();
+  final maritalStatus=TextEditingController();
+  final gender=TextEditingController();
+  final identytNo=TextEditingController();
+  final identytytype=TextEditingController();
+  final adressType=TextEditingController();
+  final adress=TextEditingController();
+  final phone=TextEditingController();
+
 
 
   _DebitCardRequestState();
@@ -35,6 +46,17 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
       });
     }
     accountNumber.text=  "1000000067567";
+    customerTitle.text='1:MR';
+    cardType.text='NEW';
+    debitCardType.text="1:ORDINARY DEBIT CARD";
+    nameOnCard.text='OROMIA';
+    maritalStatus.text="1:Single";
+    gender.text="M";
+    identytytype.text='1:Civil ID';
+    identytNo.text='1002272462';
+    adressType.text='01:Mailing Address';
+    adress.text='Addis Ababa';
+    phone.text='+251911427707';
     return  Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: APPBarChieledPage("App Connect Test",'Debit Card Request').buildPreferredSize(),
@@ -48,8 +70,59 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
                 Container(
                  alignment: Alignment.topLeft,
                   padding: EdgeInsets.all(5.0),
-                  child: UserInputTextField(accountNumber,'Customer Bank Account'),
+                  child: UserInputTextField(customerTitle,'Customer Title'),
                 ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(cardType,'Card Type'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(debitCardType,'Debit Card type'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(nameOnCard,'Name on Card'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(maritalStatus,'Marital Status'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(gender,'Gender'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(identytytype,'Identity Type'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(identytNo,'Identity No'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(adressType,'Adress type'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(adress,'Address'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(phone,'Phone Number'),
+                ),
+
 
                 Container(
                     child: ElevatedButton(child:Text('Request Debit Card'),onPressed: ()=>miniStatement())
@@ -68,7 +141,7 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=11'));
     request.body =
     '''
    {
@@ -96,13 +169,13 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
                 "FieldName": "CUSTOMER.ID",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": ""
+                "FieldContent": "${customerID.text}"
             },
             {
                 "FieldName": "CUS.TITLE",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1:MR"
+                "FieldContent": "${customerTitle.text}"
             },
             {
                 "FieldName": "CARD.REQ.TYPE",
@@ -114,55 +187,55 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
                 "FieldName": "DEBIT.CARD.TYPE",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1:ORDINARY DEBIT CARD"
+                "FieldContent": "${debitCardType.text}"
             },
             {
                 "FieldName": "NAME.ON.CARD",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "OROMIA"
+                "FieldContent": "${nameOnCard.text}"
             },
             {
                 "FieldName": "MARITAL.STATUS",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1:Single"
+                "FieldContent": "${maritalStatus.text}"
             },
             {
                 "FieldName": "GENDER",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "M"
+                "FieldContent": "${gender.text}"
             },
             {
                 "FieldName": "IDENTITY.NO",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1002272462"
+                "FieldContent": "${identytNo.text}"
             },
             {
                 "FieldName": "IDENTITY.TYPE",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1:Civil ID"
+                "FieldContent": "${identytytype.text}"
             },
             {
                 "FieldName": "ADDRESS.TYPE",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "01:Mailing Address"
+                "FieldContent": "${adressType.text}"
             },
             {
                 "FieldName": "ADDRESS",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "ADDIS ABABA"
+                "FieldContent": "${adress.text}"
             },
             {
                 "FieldName": "PHONE.NO",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "+251911427707"
+                "FieldContent": "${phone.text}"
             }
         ]
     }
@@ -176,23 +249,23 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
       String val=await response.stream.bytesToString();
 
       var data=convert.jsonDecode(val);
+print(val);
 
-
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['DebitCardRequestResponse']['ESBStatus']['status']!='Success')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][1],
+          desc: data['DebitCardRequestResponse']['ESBStatus']['Status'],
           btnCancelOnPress:(){Navigator.pop(context);} ,
         ).show();
 
 else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
+       data= data['DebitCardRequestResponse']['ReturnedMessageData'];
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
+        MaterialPageRoute(builder: (context)=>DebitCardRequestResponse(data)),
       );
     }
 

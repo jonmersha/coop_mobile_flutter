@@ -1,27 +1,29 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coop_mobile/CommonData.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
+import 'package:coop_mobile/response/ChequeStatusResponse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
-class CheckBookStatusRequest extends StatefulWidget {
+class CheckBookStatus extends StatefulWidget {
 
 
   @override
-  _CheckBookStatusRequestState createState() => _CheckBookStatusRequestState();
+  _CheckBookStatusState createState() => _CheckBookStatusState();
 }
 
-class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
+class _CheckBookStatusState extends State<CheckBookStatus> {
 
 
   final accountNumber=TextEditingController();
 
 
-  _CheckBookStatusRequestState();
+  _CheckBookStatusState();
   @override
   Widget build(BuildContext context) {
     String setOperationType(int type){
@@ -29,7 +31,7 @@ class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
         //   operationType=type;
       });
     }
-    accountNumber.text=  "1000000067567";
+    accountNumber.text=  "1000000000028";
     return  Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: APPBarChieledPage("App Connect Test",'ChequeBook Status').buildPreferredSize(),
@@ -63,7 +65,7 @@ class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=9'));
     request.body = '''
     
     {
@@ -82,7 +84,7 @@ class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
         "CHQPRESENTEDWSType": [
             {
                 "columnName": "@ID",
-                "criteriaValue": "1000000000028",
+                "criteriaValue": "${accountNumber.text}",
                 "operand": "CT"
             }
         ]
@@ -96,10 +98,12 @@ class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
       Navigator.pop(context);
       String val=await response.stream.bytesToString();
 
+     // print(val);
+
       var data=convert.jsonDecode(val);
 
 
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['ChequeBookStatusResponse']['Status']['successIndicator']!='Success')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
@@ -110,10 +114,16 @@ class _CheckBookStatusRequestState extends State<CheckBookStatusRequest> {
         ).show();
 
 else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
-      Navigator.push(
+       data= data['ChequeBookStatusResponse'];
+      var accountNumber=data['CHQPRESENTEDWSType']['AccountNo'];
+      var accountName=data['CHQPRESENTEDWSType']['ACCNAME'];
+
+       data= data['CHQPRESENTEDWSType']['gCHQPRESENTEDWSDetailType']['mCHQPRESENTEDWSDetailType'];
+       print(data);
+
+       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
+        MaterialPageRoute(builder: (context)=>ChequeStatusResponse(data,accountNumber,accountName)),
       );
     }
 

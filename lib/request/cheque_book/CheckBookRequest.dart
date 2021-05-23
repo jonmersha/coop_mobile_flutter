@@ -1,10 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coop_mobile/CommonData.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
 import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
 import 'package:coop_mobile/response/BlalanceResponse.dart';
+import 'package:coop_mobile/response/ChequeBookRequestResponse.dart';
 import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
 import 'package:coop_mobile/response/MiniStatementResponse.dart';
 import 'package:coop_mobile/response/TransationDetailResponse.dart';
@@ -34,7 +36,7 @@ class _CheckBookRequestState extends State<CheckBookRequest> {
         //   operationType=type;
       });
     }
-    accountNumber.text=  "1000000067567";
+    accountNumber.text=  "1000012770662";
     return  Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: APPBarChieledPage("App Connect Test",'Cheque Book Request').buildPreferredSize(),
@@ -52,7 +54,7 @@ class _CheckBookRequestState extends State<CheckBookRequest> {
                 ),
 
                 Container(
-                    child: ElevatedButton(child:Text('Balance Request'),onPressed: ()=>miniStatement())
+                    child: ElevatedButton(child:Text('Cheque Book Request'),onPressed: ()=>miniStatement())
                 ),
 
               ],
@@ -68,8 +70,9 @@ class _CheckBookRequestState extends State<CheckBookRequest> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=10'));
     request.body = '''{
+    {
     "CHEQUEBOOKREQUEST": {
         "ESBHeader": {
             "serviceCode": "130000",
@@ -83,11 +86,13 @@ class _CheckBookRequestState extends State<CheckBookRequest> {
             "userName": "MMTUSER1"
         },
         "CHEQUEISSUEINPUTCBOWSType": {
-            "id": "CABA.1000012770662",
+            "id": "CABA.${accountNumber.text}",
             "ChequeStatusInput90": "50"
         }
     }
-}'''
+}
+
+'''
     ;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -98,21 +103,22 @@ class _CheckBookRequestState extends State<CheckBookRequest> {
       var data=convert.jsonDecode(val);
 
 
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['CHEQUEBOOKREQUESTResponse']['ESBStatus']['Status']=='Failure')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][1],
+          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][0],
           btnCancelOnPress:(){Navigator.pop(context);} ,
         ).show();
 
 else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
+       data= data['CHEQUEBOOKREQUESTResponse'];
+       print(data);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
+        MaterialPageRoute(builder: (context)=>ChequeBookRequestResponse(data)),
       );
     }
 

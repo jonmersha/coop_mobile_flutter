@@ -1,13 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:coop_mobile/CommonData.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
-import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
-import 'package:coop_mobile/response/BlalanceResponse.dart';
-import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
-import 'package:coop_mobile/response/MiniStatementResponse.dart';
-import 'package:coop_mobile/response/TransationDetailResponse.dart';
+import 'package:coop_mobile/response/FundTransferResponse.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +24,9 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
   final debitAccount=TextEditingController();
   final creditAccount=TextEditingController();
   final amount=TextEditingController();
-  final narratives=TextEditingController();
+  final crNarratives=TextEditingController();
+  final drNarratives=TextEditingController();
+  final orderedBY=TextEditingController();
   final mmtTransactionID=TextEditingController();
 
 
@@ -41,6 +41,10 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
     }
     debitAccount.text=  "1000000004077";
     creditAccount.text=  "1000065305252";
+    amount.text='120';
+    crNarratives.text='crn';
+    drNarratives.text='drn';
+
     return  Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: APPBarChieledPage("App Connect Test",'Fund Transfer').buildPreferredSize(),
@@ -70,7 +74,17 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
                 Container(
                  alignment: Alignment.topLeft,
                   padding: EdgeInsets.all(5.0),
-                  child: UserInputTextField(narratives,'Narratives'),
+                  child: UserInputTextField(crNarratives,'Credit Naratives'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(drNarratives,'Debit  Narratives'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(orderedBY,'Order BY'),
                 ),
                 Container(
                  alignment: Alignment.topLeft,
@@ -79,7 +93,7 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
                 ),
 
                 Container(
-                    child: ElevatedButton(child:Text('Fund Transfer'),onPressed: ()=>miniStatement())
+                    child: ElevatedButton(child:Text('Fund Transfer'),onPressed: ()=>sendMoney())
                 ),
 
               ],
@@ -90,21 +104,21 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
 
   }
 
-  miniStatement() async {
-    Methods.showLoaderDialog(context,'Mini Statement Request...');
+  sendMoney() async {
+    Methods.showLoaderDialog(context,'Fund Transfer...');
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=6'));
     request.body =
-
-''' {
+''' 
+{
     "InternalFundTransferRequest": {
         "ESBHeader": {
             "serviceCode": "600000",
             "channel": "USSD",
             "Service_name": "MMTACCTTXN",
-            "Message_Id": "MM582729"
+            "Message_Id": "MM582720"
         },
         "WebRequestCommon": {
             "company": "ET0010001",
@@ -112,47 +126,50 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
             "userName": "MMTUSER1"
         },
         "OfsFunction": {
-            "messageId": "P345343787"
+            "messageId": "P345343778"
         },
         "FUNDSTRANSFERACTRMMTType": {
             "id": "",
-            "DebitAccount": "1000000004077",
+            "DebitAccount": "${debitAccount.text}",
             "DebitCurrency": "ETB",
-            "DebitAmount": "10",
+            "DebitAmount": "${amount.text}",
             "DebitValueDate": " ",
-            "DebitNarrative": "TEST2",
-            "CreditNarrative": "TEST2",
-            "CreditAccount": "1000065305252",
+            "DebitNarrative": "${drNarratives.text}",
+            "CreditNarrative": "${creditAccount.text}",
+            "CreditAccount":"${creditAccount.text}" ,
             "gORDERINGCUST": {
                 "g": "1",
-                "OrderedBy": "TEST"
+                "OrderedBy": "${orderedBY.text}"
             },
-            "MMTTransactionId": "P3453437"
+            "MMTTransactionId": "${mmtTransactionID.text}"
         }
     }
-}''';
+}
+
+''';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       Navigator.pop(context);
       String val=await response.stream.bytesToString();
+      print('\n'+val);
 
       var data=convert.jsonDecode(val);
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['InternalFundTransferResponse']['Status']['successIndicator']!='Success')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][1],
+          desc: data['InternalFundTransferResponse']['Status']['successIndicator'],
           btnCancelOnPress:(){Navigator.pop(context);} ,
         ).show();
 
 else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
+        data= data['InternalFundTransferResponse']['FUNDSTRANSFERType'];
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
+        MaterialPageRoute(builder: (context)=>FundTransferResponse(data)),
       );
     }
 

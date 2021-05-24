@@ -7,7 +7,7 @@ class Methods {
         children: [
           CircularProgressIndicator(),
           Container(
-              margin: EdgeInsets.only(left: 7), child: Text(message,style: TextStyle(fontSize: 10),)),
+              margin: EdgeInsets.only(left: 7), child: Text(message,style: TextStyle(fontSize: 12),)),
         ],),
     );
     showDialog(barrierDismissible: false,

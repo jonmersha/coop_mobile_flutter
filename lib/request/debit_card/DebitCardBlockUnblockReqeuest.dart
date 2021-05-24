@@ -67,7 +67,9 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
     Methods.showLoaderDialog(context,'Starts blocking...');
     var headers = {
       'Content-Type': 'application/json'
-    };
+    "Access-Control-Allow-Origin: *"
+
+  };
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
     request.body =
     '''

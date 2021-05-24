@@ -1,4 +1,4 @@
 class CommonData{
- static String ip='192.168.77.124';
+ static String ip='10.1.245.150';
 
 }

@@ -42,8 +42,11 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
     debitAccount.text=  "1000000004077";
     creditAccount.text=  "1000065305252";
     amount.text='120';
-    crNarratives.text='crn';
-    drNarratives.text='drn';
+    crNarratives.text='TEST2';
+    drNarratives.text='TEST2';
+
+    mmtTransactionID.text='P3453437';
+    orderedBY.text='TEST';
 
     return  Scaffold(
         resizeToAvoidBottomInset: true,
@@ -104,7 +107,47 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
 
   }
 
+
+
+
+
   sendMoney() async {
+
+    String body='''{
+    "InternalFundTransferRequest": {
+        "ESBHeader": {
+            "serviceCode": "600000",
+            "channel": "USSD",
+            "Service_name": "MMTACCTTXN",
+            "Message_Id": "MM582720"
+        },
+        "WebRequestCommon": {
+            "company": "ET0010001",
+            "password": "123123",
+            "userName": "MMTUSER1"
+        },
+        "OfsFunction": {
+            "messageId": "P345343778"
+        },
+        "FUNDSTRANSFERACTRMMTType": {
+            "id": "",
+            "DebitAccount": "${debitAccount.text}",
+            "DebitCurrency": "ETB",
+            "DebitAmount": "${amount.text}",
+            "DebitValueDate": " ",
+            "DebitNarrative": "${drNarratives.text}",
+            "CreditNarrative": "${creditAccount.text}",
+            "CreditAccount":"${creditAccount.text}" ,
+            "gORDERINGCUST": {
+                "g": "1",
+                "OrderedBy": "${orderedBY.text}"
+            },
+            "MMTTransactionId": "${mmtTransactionID.text}"
+        }
+    }
+}
+''';
+    print(body);
     Methods.showLoaderDialog(context,'Fund Transfer...');
     var headers = {
       'Content-Type': 'application/json'

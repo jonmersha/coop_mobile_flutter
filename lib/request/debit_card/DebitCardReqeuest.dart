@@ -140,6 +140,7 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
     Methods.showLoaderDialog(context,'Requesting Debit Card...');
     var headers = {
       'Content-Type': 'application/json'
+          "Access-Control-Allow-Origin: *"
     };
     var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=11'));
     request.body =

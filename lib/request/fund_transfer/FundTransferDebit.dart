@@ -54,7 +54,7 @@ class _BulkFundTransferDebitState extends State<BulkFundTransferDebit> {
                 ),
 
                 Container(
-                    child: ElevatedButton(child:Text('bulk Debit'),onPressed: ()=>miniStatement())
+                    child: ElevatedButton(child:Text('bulk Debit'),onPressed: ()=>bulkTransfer())
                 ),
 
               ],
@@ -65,14 +65,15 @@ class _BulkFundTransferDebitState extends State<BulkFundTransferDebit> {
 
   }
 
-  miniStatement() async {
+  bulkTransfer() async {
     Methods.showLoaderDialog(context,'bulk debiting started...');
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=7'));
-    request.body ='''
-    {
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo/'));
+    request.body =
+
+    '''{
     "BulkFundTransferRequest": {
         "ESBHeader": {
             "serviceCode": "120000",
@@ -154,9 +155,9 @@ class _BulkFundTransferDebitState extends State<BulkFundTransferDebit> {
             }
         ]
     }
-}
-    '''
-     ;
+}''';
+
+    print(request.body);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {

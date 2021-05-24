@@ -1,10 +1,6 @@
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/menu.dart';
 import 'package:flutter/material.dart';
-
-
-
-
 void main() {
   runApp(MaterialApp(
     title: 'Coop Mobile',

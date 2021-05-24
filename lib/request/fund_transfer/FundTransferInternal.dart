@@ -113,49 +113,14 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
 
   sendMoney() async {
 
-    String body='''{
-    "InternalFundTransferRequest": {
-        "ESBHeader": {
-            "serviceCode": "600000",
-            "channel": "USSD",
-            "Service_name": "MMTACCTTXN",
-            "Message_Id": "MM582720"
-        },
-        "WebRequestCommon": {
-            "company": "ET0010001",
-            "password": "123123",
-            "userName": "MMTUSER1"
-        },
-        "OfsFunction": {
-            "messageId": "P345343778"
-        },
-        "FUNDSTRANSFERACTRMMTType": {
-            "id": "",
-            "DebitAccount": "${debitAccount.text}",
-            "DebitCurrency": "ETB",
-            "DebitAmount": "${amount.text}",
-            "DebitValueDate": " ",
-            "DebitNarrative": "${drNarratives.text}",
-            "CreditNarrative": "${creditAccount.text}",
-            "CreditAccount":"${creditAccount.text}" ,
-            "gORDERINGCUST": {
-                "g": "1",
-                "OrderedBy": "${orderedBY.text}"
-            },
-            "MMTTransactionId": "${mmtTransactionID.text}"
-        }
-    }
-}
-''';
-    print(body);
+
+   // print(body);
     Methods.showLoaderDialog(context,'Fund Transfer...');
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=6'));
-    request.body =
-''' 
-{
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo/'));
+    request.body = '''{
     "InternalFundTransferRequest": {
         "ESBHeader": {
             "serviceCode": "600000",
@@ -163,6 +128,7 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
             "Service_name": "MMTACCTTXN",
             "Message_Id": "MM582720"
         },
+        
         "WebRequestCommon": {
             "company": "ET0010001",
             "password": "123123",
@@ -187,9 +153,7 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
             "MMTTransactionId": "${mmtTransactionID.text}"
         }
     }
-}
-
-''';
+}''';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -197,15 +161,18 @@ class _FundTransferInternalState extends State<FundTransferInternal> {
       String val=await response.stream.bytesToString();
       print('\n'+val);
 
+
       var data=convert.jsonDecode(val);
-      if(data['InternalFundTransferResponse']['Status']['successIndicator']!='Success')
+      if(data['InternalFundTransferResponse']['ESBStatus']['Status']!='Success')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['InternalFundTransferResponse']['Status']['successIndicator'],
-          btnCancelOnPress:(){Navigator.pop(context);} ,
+          desc: data['InternalFundTransferResponse']['ESBStatus']['errorDescription'].toString(),
+          btnCancelOnPress:(){
+            Navigator.pop(context);
+            } ,
         ).show();
 
 else{

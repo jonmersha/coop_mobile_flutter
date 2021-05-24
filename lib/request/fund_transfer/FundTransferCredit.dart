@@ -63,9 +63,8 @@ class _BulkFundTransferCreditState extends State<BulkFundTransferCredit> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=8'));
-    request.body ='''
-    {
+    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo/'));
+    request.body = '''{
     "BulkFundTransferRequest": {
         "ESBHeader": {
             "serviceCode": "120000",
@@ -141,17 +140,16 @@ class _BulkFundTransferCreditState extends State<BulkFundTransferCredit> {
             }
         ]
     }
-}
-}
-    ''';
+}''';
+
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       Navigator.pop(context);
       String val=await response.stream.bytesToString();
 
+      print(val);
       var data=convert.jsonDecode(val);
-
 
       if(data['BulkFundTransferResponse']['ESBStatus']['Status']!='Success')
         AwesomeDialog(

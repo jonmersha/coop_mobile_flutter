@@ -2,12 +2,10 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:coop_mobile/CustomerWidget/CustomAppBar.dart';
 import 'package:coop_mobile/CustomerWidget/CustomText.dart';
 import 'package:coop_mobile/CustomerWidget/AcropPop.dart';
-import 'package:coop_mobile/model/TransationDetailResponseModel.dart';
+
 import 'package:coop_mobile/response/AccountDetailResponse.dart';
-import 'package:coop_mobile/response/BlalanceResponse.dart';
-import 'package:coop_mobile/response/GiveneDateStatementResponse.dart';
-import 'package:coop_mobile/response/MiniStatementResponse.dart';
-import 'package:coop_mobile/response/TransationDetailResponse.dart';
+import 'package:coop_mobile/response/DebitCardReplacementResponse.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +22,8 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
 
 
   final accountNumber=TextEditingController();
+  final date=TextEditingController();
+  final cardStatus=TextEditingController();
 
 
   _DebitCardBlockUnblockRequestState();
@@ -34,7 +34,9 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
         //   operationType=type;
       });
     }
-    accountNumber.text=  "1000000067567";
+    accountNumber.text=  "1000000077546";
+    date.text=  "20220313";
+    cardStatus.text=  "91";
     return  Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: APPBarChieledPage("App Connect Test",'Debit Card Block Unblock').buildPreferredSize(),
@@ -50,9 +52,19 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
                   padding: EdgeInsets.all(5.0),
                   child: UserInputTextField(accountNumber,'Customer Bank Account'),
                 ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(date,'Expiry Date'),
+                ),
+                Container(
+                 alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(5.0),
+                  child: UserInputTextField(cardStatus,'Card Status'),
+                ),
 
                 Container(
-                    child: ElevatedButton(child:Text('block/unblock'),onPressed: ()=>miniStatement())
+                    child: ElevatedButton(child:Text('block/unblock'),onPressed: ()=>cardBlockUnblock())
                 ),
 
               ],
@@ -63,7 +75,7 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
 
   }
 
-  miniStatement() async {
+  cardBlockUnblock() async {
     Methods.showLoaderDialog(context,'Starts blocking...');
     var headers = {
       'Content-Type': 'application/json'
@@ -71,9 +83,7 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
 
   };
     var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
-    request.body =
-    '''
-    {
+    request.body ='''{
     "DebitCardBlockAndUnBlockRequest": {
         "ESBHeader": {
             "serviceCode": "170000",
@@ -90,33 +100,31 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
         "UserInformation": {
             "UserId": "METASEBIAYIM",
             "PassWord": "@Tamgaw00@",
-            "CompanyID": "ET0010021"
+            "CompanyID": "ET0010222"
         },
-        "TransactionID": "ATM.01234567890123456",
+        "TransactionID": "ATM.9572055445584801",
         "MessageData": [
             {
                 "FieldName": "CARD.STATUS",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "91"
+                "FieldContent": "${cardStatus.text}"
             },
             {
                 "FieldName": "ACCOUNT",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "1000003658817"
+                "FieldContent": "${accountNumber.text}"
             },
             {
                 "FieldName": "EXPIRY.DATE",
                 "MultiValueNumber": "1",
                 "SubvalueNumber": "1",
-                "FieldContent": "20220313"
+                "FieldContent": "${date.text}"
             }
         ]
     }
-} 
-    '''
-    ;
+}''';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -126,23 +134,23 @@ class _DebitCardBlockUnblockRequestState extends State<DebitCardBlockUnblockRequ
       var data=convert.jsonDecode(val);
 
 
-      if(data['AccountDetailsResponse']['ESBStatus']['Status']=='Failure')
+      if(data['DebitCardBlockUnBlockResponse']['MessageData']==null)
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['AccountDetailsResponse']['ESBStatus']['errorDescription'][1],
-          btnCancelOnPress:(){Navigator.pop(context);} ,
+          desc: 'No Data Returned From server',
+          btnCancelOnPress:(){} ,
         ).show();
 
-else{
-       data= data['AccountDetailsResponse']['ACCTBRANCHResponse']['ACCTCOMPANYVIEWType'][0]['gACCTCOMPANYVIEWDetailType']['mACCTCOMPANYVIEWDetailType'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context)=>AccountDetailResponse(data)),
-      );
-    }
+      else{
+        data= data['DebitCardBlockUnBlockResponse']['MessageData'];
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context)=>DebitCardRequestResponse(data)),
+        );
+      }
 
     }
     else {

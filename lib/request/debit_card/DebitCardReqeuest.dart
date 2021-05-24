@@ -137,15 +137,15 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
   }
 
   miniStatement() async {
+
+
     Methods.showLoaderDialog(context,'Requesting Debit Card...');
     var headers = {
       'Content-Type': 'application/json'
           "Access-Control-Allow-Origin: *"
     };
-    var request = http.Request('POST', Uri.parse('http://${CommonData.ip}:7080/v1/cbo?id=11'));
-    request.body =
-    '''
-   {
+    var request = http.Request('POST', Uri.parse('http://10.1.245.150:7080/v1/cbo/'));
+    request.body ='''{
     "DebitCardRequest": {
         "ESBHeader": {
             "serviceCode": "150000",
@@ -240,25 +240,21 @@ class _DebitCardRequestState extends State<DebitCardRequest> {
             }
         ]
     }
-}
-    '''
-    ;
+}''';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       Navigator.pop(context);
       String val=await response.stream.bytesToString();
-
       var data=convert.jsonDecode(val);
 print(val);
-
-      if(data['DebitCardRequestResponse']['ESBStatus']['status']!='Success')
+      if(data['DebitCardRequestResponse']['ReturnedErrorMessageData'][0]=='LIVE RECORD NOT CHANGED')
         AwesomeDialog(
           context: context,
           dialogType: DialogType.ERROR,
           animType: AnimType.BOTTOMSLIDE,
           title: 'Error Message',
-          desc: data['DebitCardRequestResponse']['ESBStatus']['Status'],
+          desc: 'LIVE RECORD NOT CHANGED',
           btnCancelOnPress:(){Navigator.pop(context);} ,
         ).show();
 
